@@ -22,7 +22,10 @@ Available modes are:
 - Farmer: Harvest the corp and re-plant them
 - Seed: Break the grass and flowers around you
 - Feed: Feed the animals around you with the item in your hand. Also shear the sheep if you take the scissors
-- Fishing: Automatically reel in and recast your fishing rod 
+- Fishing: Automatically reel in and recast your fishing rod
+- *Peeling: Right click on the log with an axe to obtain peeled logs
+- *Farmland: Automatic hoeing
+- *Don't Break White Stone: A game on some servers
 
 Supported Crops:
 
@@ -39,9 +42,6 @@ Supported Crops:
 - Mushroom (Small ones Only)
 - All kind of grass
 - All kind of flowers
-- *Peeling: Right click on the log with an axe to obtain peeled logs
-- *Farmland: Automatic hoeing
-- *Don't Break White Stone: A game on some servers
 
 ### License
 This mod is publish under GPLv3.
