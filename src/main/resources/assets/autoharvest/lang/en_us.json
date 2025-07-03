@@ -6,6 +6,7 @@
   "key.general.config": "Open Config",
   "notify.turn.on": "AutoHarvest turned on",
   "notify.turn.off": "AutoHarvest turned off",
+  "Auto Harvest": "Auto Harvest",
   "harvest": "Harvest mode",
   "plant": "Plant mode",
   "farmer": "Farmer mode",

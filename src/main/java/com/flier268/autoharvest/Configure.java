@@ -79,7 +79,7 @@ public class Configure {
                     try {
                         this.tickSkip.value = jsonObject.getAsJsonPrimitive(tickSkip.name).getAsFloat();
                         if (tickSkip.value < TickSkip.Min || tickSkip.value > TickSkip.Max)
-                            tickSkip.value = TickSkip.Min;
+                            tickSkip.value = 2f;
                     } catch (Exception e) {
                     }
                 }

@@ -47,4 +47,5 @@
 您可以在`LICENSE`文件中找到详細信息。
 
 复制自[flier268](https://github.com/flier268/AutoHarvestMod)并由[Sz-Yuan](https://github.com/Sz-Yuan/AutoHarvestMod)更新到1.20.1
+
 由本人添加额外功能

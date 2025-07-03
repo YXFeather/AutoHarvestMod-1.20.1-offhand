@@ -26,6 +26,7 @@ public class CropManager {
     public static final Block KELP = Blocks.KELP;
     public static final Block KELP_PLANT = Blocks.KELP_PLANT;
 
+
     public static final Set<Block> WEED_BLOCKS = new HashSet<>() {
         {
             add(Blocks.OAK_SAPLING);
@@ -61,7 +62,9 @@ public class CropManager {
             add(Blocks.ACACIA_LOG);
             add(Blocks.CHERRY_LOG);
             add(Blocks.DARK_OAK_LOG);
-            add(Blocks.MANGROVE_LOG);
+            add(Blocks.MANGROVE_LOG); //红木
+            add(Blocks.CRIMSON_STEM); //绯红木
+            add(Blocks.WARPED_STEM); //诡异木
             add(Blocks.BAMBOO_BLOCK);
             add(Blocks.OAK_WOOD);
             add(Blocks.SPRUCE_WOOD);
@@ -70,16 +73,17 @@ public class CropManager {
             add(Blocks.ACACIA_WOOD);
             add(Blocks.CHERRY_WOOD);
             add(Blocks.DARK_OAK_WOOD);
-            add(Blocks.MANGROVE_WOOD);
+            add(Blocks.MANGROVE_WOOD); //红木
+            add(Blocks.CRIMSON_HYPHAE); //绯红木
+            add(Blocks.WARPED_HYPHAE); //诡异木
         }
     };
 
-    public static final Set<Block> WOOL_BLOCKS = new HashSet<>() {
-        {
-            add(Blocks.BLACK_WOOL);
-            add(Blocks.WHITE_WOOL);
-        }
-    };
+//    public static final Set<Block> WOOL_BLOCKS = new HashSet<>() {
+//        {
+//            add(Blocks.BLACK_WOOL);
+//        }
+//    };
 
     public static final Set<Block> FLOWER_BLOCKS = new HashSet<>() {
         {
@@ -200,6 +204,7 @@ public class CropManager {
         SHEAR_MAP.put(Items.SHEARS, SheepEntity.class);
     }
 
+
     public static boolean isWeedBlock(World w, BlockPos pos) {
         Block b = w.getBlockState(pos).getBlock();
         return WEED_BLOCKS.contains(b);
@@ -211,10 +216,10 @@ public class CropManager {
         return WOOD_BLOCKS.contains(b);
     }
     //是黑色羊毛
-    public static boolean isBLACKWOOL(World w, BlockPos pos) {
-        Block b = w.getBlockState(pos).getBlock();
-        return WOOL_BLOCKS.contains(b);
-    }
+//    public static boolean isBlackWool(World w, BlockPos pos) {
+//        Block b = w.getBlockState(pos).getBlock();
+//        return WOOL_BLOCKS.contains(b);
+//    }
 
     public static boolean isFlowerBlock(World w, BlockPos pos) {
         Block b = w.getBlockState(pos).getBlock();

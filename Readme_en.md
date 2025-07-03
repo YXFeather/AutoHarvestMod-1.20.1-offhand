@@ -48,4 +48,5 @@ This mod is publish under GPLv3.
 You can find details in the `LICENSE` file.
 
 Clone from [flier268](https://github.com/flier268/AutoHarvestMod) and update it to 1.20.1 by [Sz-Yuan](https://github.com/Sz-Yuan/AutoHarvestMod)
+
 Clone from [Sz-Yuan](https://github.com/Sz-Yuan/AutoHarvestMod) and add some additional features

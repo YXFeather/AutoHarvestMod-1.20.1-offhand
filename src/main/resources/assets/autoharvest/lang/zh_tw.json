@@ -6,6 +6,7 @@
   "key.general.config":"設定",
   "notify.turn.on": "自動收割已啟動",
   "notify.turn.off": "自動收割已停止",
+  "autoharvest": "自動收穫",
   "harvest": "收割 模式",
   "plant": "種植 模式",
   "farmer": "農夫 模式",
@@ -22,7 +23,7 @@
   "notify.tick_error":"發生錯誤",
   "config.flower_is_seed": "花會被除草模式清除",
   "config.effect_radius": "作用半徑",
-  "config.tick_skip": "跳過n刻",
+  "config.tick_skip": "作用速度(秒)",
   "config.tick_skip_tooltip": "20刻 / 秒",
-  "config.keep_fishing_rod_alive": "不破壞魚桿"
+  "config.keep_fishing_rod_alive": "保持魚竿激活"
 }

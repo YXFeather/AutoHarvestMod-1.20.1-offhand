@@ -10,8 +10,7 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
@@ -20,7 +19,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 
 public class TickListener {
     private final Configure configure;
@@ -73,7 +71,10 @@ public class TickListener {
                 case FEED -> feedTick();
                 case FISHING -> fishingTick();
                 case BONEMEALING -> bonemealingTick();
-                case HOEING -> hoeingTick();
+                case HOEING -> {
+                    mainHoeingTick();
+                    offHoeingTick();
+                }
                 case AXEITEMS -> axeItemsTick();
                 case DONTSTEPWHITE -> handTick();
             }
@@ -106,12 +107,22 @@ public class TickListener {
                 }
     }
 
-    private void hoeingTick() {
+    /**
+     * 主手锄头耕地
+     */
+    private void mainHoeingTick() {
+        ItemStack MainHandItem = p.getMainHandStack();
+        if (MainHandItem == null || !MainHandItem.isIn(ItemTags.HOES)) {
+            return;
+        }
         World w = p.getEntityWorld();
         int X = (int) Math.floor(p.getX());
         int Y = (int) Math.floor(p.getY() -0.2D);// 脚下方块
         int Z = (int) Math.floor(p.getZ());
-        for (int deltaX = -configure.effect_radius.value; deltaX <= configure.effect_radius.value; ++deltaX)
+        for (int deltaX = -configure.effect_radius.value; deltaX <= configure.effect_radius.value; ++deltaX){
+            if (!MainHandItem.isIn(ItemTags.HOES)){
+                return;
+            }
             for (int deltaZ = -configure.effect_radius.value; deltaZ <= configure.effect_radius.value; ++deltaZ) {
                 BlockPos pos = new BlockPos(X + deltaX, Y, Z + deltaZ);
                 BlockState state = w.getBlockState(pos);
@@ -119,37 +130,75 @@ public class TickListener {
                 if ((block == Blocks.DIRT ||
                         block == Blocks.GRASS_BLOCK ||
                         block == Blocks.COARSE_DIRT ||
-                        block == Blocks.ROOTED_DIRT) && (
-                        p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.DIAMOND_HOE ||
-                                p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.WOODEN_HOE ||
-                                p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.STONE_HOE ||
-                                p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.IRON_HOE ||
-                                p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.GOLDEN_HOE ||
-                                p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.NETHERITE_HOE)) {
-                    if (isWaterNearby(w, pos)) {
-                        if (w.getBlockState(pos.up()).getBlock() == Blocks.AIR) {
-                            BlockHitResult blockHitResult = new BlockHitResult(
-                                    new Vec3d(X + deltaX + 0.5, Y, Z + deltaZ + 0.5), Direction.UP, pos, false);
-                            assert MinecraftClient.getInstance().interactionManager != null;
-                            MinecraftClient.getInstance().interactionManager.interactBlock(
-                                    MinecraftClient.getInstance().player, Hand.MAIN_HAND, blockHitResult);
-                            return;
-                        }
+                        block == Blocks.ROOTED_DIRT)) {
+//                    if (isWaterNearby(w, pos)) {
+                    if (w.getBlockState(pos.up()).getBlock() == Blocks.AIR) {
+                        BlockHitResult blockHitResult = new BlockHitResult(
+                                new Vec3d(X + deltaX + 0.5, Y, Z + deltaZ + 0.5), Direction.UP, pos, false);
+                        assert MinecraftClient.getInstance().interactionManager != null;
+                        MinecraftClient.getInstance().interactionManager.interactBlock(
+                                MinecraftClient.getInstance().player, Hand.MAIN_HAND, blockHitResult);
+                        return;
+//                        }
                     }
                 }
             }
+        }
     }
 
-    //临近水源
-    private boolean isWaterNearby(WorldView world, BlockPos pos) {
-        for (BlockPos blockPos : BlockPos.iterate(pos.add(-4, 0, -4), pos.add(4, 1, 4))) {
-            if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) return true;
+    /**
+     * 副手锄头耕地
+     */
+    private void offHoeingTick() {
+        ItemStack OffHandItem = p.getOffHandStack();
+        if (OffHandItem == null || !OffHandItem.isIn(ItemTags.HOES)) {
+            return;
         }
-        return true;
+        World w = p.getEntityWorld();
+        int X = (int) Math.floor(p.getX());
+        int Y = (int) Math.floor(p.getY() -0.2D);// 脚下方块
+        int Z = (int) Math.floor(p.getZ());
+        for (int deltaX = -configure.effect_radius.value; deltaX <= configure.effect_radius.value; ++deltaX){
+            if (!OffHandItem.isIn(ItemTags.HOES)){
+                return;
+            }
+            for (int deltaZ = -configure.effect_radius.value; deltaZ <= configure.effect_radius.value; ++deltaZ) {
+
+                BlockPos pos = new BlockPos(X + deltaX, Y, Z + deltaZ);
+                BlockState state = w.getBlockState(pos);
+                Block block = state.getBlock();
+                if ((block == Blocks.DIRT ||
+                        block == Blocks.GRASS_BLOCK ||
+                        block == Blocks.COARSE_DIRT ||
+                        block == Blocks.ROOTED_DIRT)) {
+//                    if (isWaterNearby(w, pos)) {
+                    if (w.getBlockState(pos.up()).getBlock() == Blocks.AIR) {
+                        BlockHitResult blockHitResult = new BlockHitResult(
+                                new Vec3d(X + deltaX + 0.5, Y, Z + deltaZ + 0.5), Direction.UP, pos, false);
+                        assert MinecraftClient.getInstance().interactionManager != null;
+                        MinecraftClient.getInstance().interactionManager.interactBlock(
+                                MinecraftClient.getInstance().player, Hand.OFF_HAND, blockHitResult);
+                        return;
+//                        }
+                    }
+                }
+            }
+        }
     }
+
+
+    //临近水源
+//    private boolean isWaterNearby(WorldView world, BlockPos pos) {
+//        for (BlockPos blockPos : BlockPos.iterate(pos.add(-4, 0, -4), pos.add(4, 1, 4))) {
+//            if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) return true;
+//        }
+//        return true;
+//    }
+
 
     //斧头右键模式
     private void axeItemsTick() {
+        ItemStack MainHandItem = p.getOffHandStack();
         World w = p.getEntityWorld();
         int X = (int) Math.floor(p.getX());
         int Y = (int) Math.floor(p.getY()); //脚下方块
@@ -160,15 +209,7 @@ public class TickListener {
                         BlockPos pos = new BlockPos(X + deltaX, Y + deltaY, Z + deltaZ);
                         if (!canReachBlock(p, pos))
                             continue;
-                        BlockState state = w.getBlockState(pos);
-                        Block block = state.getBlock();
-                    if ((CropManager.isWood(w, pos)) && (
-                            p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.DIAMOND_AXE ||
-                                    p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.WOODEN_AXE ||
-                                    p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.STONE_AXE ||
-                                    p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.IRON_AXE ||
-                                    p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.GOLDEN_AXE ||
-                                    p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.NETHERITE_AXE)){
+                    if ((CropManager.isWood(w, pos)) && MainHandItem.isIn(ItemTags.AXES)){
                             if (CropManager.isWood(w, pos)) {
                                 BlockHitResult blockHitResult = new BlockHitResult(
                                         new Vec3d(X + deltaX + 0.5, Y + deltaY + 0.5, Z + deltaZ + 0.5), Direction.UP, pos, false);
@@ -181,29 +222,26 @@ public class TickListener {
                 }
     }
 
+
     //别踩白块左键
     private void handTick() {
         World w = p.getEntityWorld();
         int X = (int) Math.floor(p.getX());
-        int Y = (int) Math.floor(p.getY()); //脚下方块
+        int Y = (int) Math.floor(p.getY()) + 1; //脚下方块
         int Z = (int) Math.floor(p.getZ());
-        for (int deltaX = -configure.effect_radius.value; deltaX <= configure.effect_radius.value; ++deltaX)
-                for (int deltaZ = -configure.effect_radius.value; deltaZ <= configure.effect_radius.value; ++deltaZ)
-                    for (int deltaY = 0; deltaY <= 1; ++deltaY){
-                        BlockPos pos = new BlockPos(X + deltaX, Y + deltaY, Z + deltaZ);
-                        BlockState state = w.getBlockState(pos);
-                        Block block = state.getBlock();
-                        if ((CropManager.isBLACKWOOL(w, pos))){
-                            if (block == Blocks.WHITE_WOOL) {
-                                break;
-                            }else {
-                                assert MinecraftClient.getInstance().interactionManager != null;
-                                MinecraftClient.getInstance().interactionManager.attackBlock(pos, Direction.UP);
-                            }
-                            return;
-                    }
+        for (int deltaX = -configure.effect_radius.value; deltaX <= configure.effect_radius.value; ++deltaX) {
+            for (int deltaZ = -configure.effect_radius.value; deltaZ <= configure.effect_radius.value; ++deltaZ) {
+                BlockPos pos = new BlockPos(X + deltaX, Y, Z + deltaZ);
+                Block b = w.getBlockState(pos).getBlock();
+                if ((b == Blocks.BLACK_WOOL)) {
+                    assert MinecraftClient.getInstance().interactionManager != null;
+                    MinecraftClient.getInstance().interactionManager.attackBlock(pos, Direction.UP);
+                    return;
                 }
+            }
+        }
     }
+
 
     /* harvest all mature crops */
     private void harvestTick() {
@@ -257,7 +295,7 @@ public class TickListener {
     }
 
     /**
-     * @return -1: does't have rod; 0: no change; change
+     * @return -1: doesn't have rod; 0: no change; change
      * 若手上不是鱼竿尝试替换成鱼竿
      **/
     private int tryReplacingFishingRod() {

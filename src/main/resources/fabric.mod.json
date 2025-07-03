@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "autoharvest",
   "version": "${version}",
-  "name": "autoharvest",
+  "name": "Auto Harvest",
   "description": "Automatically harvest and re-plant crops",
   "authors": [
     "flier268"
