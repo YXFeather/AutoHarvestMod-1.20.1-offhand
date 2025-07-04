@@ -15,7 +15,7 @@
   "fishing": "釣魚 模式",
   "bonemealing": "催熟 模式",
   "hoeing": "耕地 模式",
-  "axeitems": "削皮 模式",
+  "axeitems": "去皮/雕刻 模式",
   "dontstepwhite": "別踩白塊 模式",
   "notify.switch_to":"已切換到 %s",
   "notify.lack_of_seed":"缺少種子",
@@ -25,5 +25,6 @@
   "config.effect_radius": "作用半徑",
   "config.tick_skip": "作用速度(秒)",
   "config.tick_skip_tooltip": "20刻 / 秒",
-  "config.keep_fishing_rod_alive": "保持魚竿激活"
+  "config.keep_fishing_rod_alive": "保持魚竿激活",
+  "config.keep_water_near_by": "在水源附近犁地"
 }

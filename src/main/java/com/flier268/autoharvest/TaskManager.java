@@ -29,7 +29,7 @@ public class TaskManager {
         taskList.add(new Line(Commands.MOVEITEM, slotNumber, currentHotbarSlot));
     }
 
-    public void Add_TickSkip(float skipTick) {
+    public void Add_TickSkip(int skipTick) {
         for (int i = 0; i < skipTick; i++)
             taskList.add(new Line(Commands.SKIPTICK));
     }

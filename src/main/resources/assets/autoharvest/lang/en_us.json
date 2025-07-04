@@ -15,7 +15,7 @@
   "fishing": "Fishing mode",
   "bonemealing": "Bonemealing mode",
   "hoeing": "Hoeing mode",
-  "axeitems": "Peel mode",
+  "axeitems": "Strip/Carve mode",
   "dontstepwhite": "Dont't step whitre mode",
   "notify.switch_to": "%s enabled",
   "notify.lack_of_seed": "You need more seeds",
@@ -25,5 +25,6 @@
   "config.effect_radius": "Radius of effect",
   "config.tick_skip": "Skip n tick",
   "config.tick_skip_tooltip": "20 tick / s",
-  "config.keep_fishing_rod_alive": "Keep rod alive when fishing"
+  "config.keep_fishing_rod_alive": "Keep rod alive when fishing",
+  "config.keep_water_near_by": "Keep tillage water near by"
 }

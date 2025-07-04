@@ -25,6 +25,8 @@ public class CropManager {
     public static final Block BAMBOO = Blocks.BAMBOO;
     public static final Block KELP = Blocks.KELP;
     public static final Block KELP_PLANT = Blocks.KELP_PLANT;
+    // 瓶子草
+    public static final Block PITCHER_CROP = Blocks.PITCHER_CROP;
 
 
     public static final Set<Block> WEED_BLOCKS = new HashSet<>() {
@@ -35,6 +37,7 @@ public class CropManager {
             add(Blocks.JUNGLE_SAPLING);
             add(Blocks.ACACIA_SAPLING);
             add(Blocks.DARK_OAK_SAPLING);
+            add(Blocks.CHERRY_SAPLING);
             add(Blocks.FERN);
             add(Blocks.GRASS);
             add(Blocks.DEAD_BUSH);
@@ -76,6 +79,7 @@ public class CropManager {
             add(Blocks.MANGROVE_WOOD); //红木
             add(Blocks.CRIMSON_HYPHAE); //绯红木
             add(Blocks.WARPED_HYPHAE); //诡异木
+            add(Blocks.PUMPKIN); //南瓜
         }
     };
 
@@ -106,7 +110,6 @@ public class CropManager {
             add(Blocks.PEONY);
             //1.20.1
             add(Blocks.TORCHFLOWER);
-            add(Blocks.PITCHER_PLANT);
         }
     };
 
@@ -130,10 +133,12 @@ public class CropManager {
                     put(Blocks.KELP, Items.KELP);
                     //1.20.1
                     put(Blocks.TORCHFLOWER_CROP,Items.TORCHFLOWER_SEEDS);
+                    put(Blocks.PITCHER_CROP,Items.PITCHER_POD);
                 }
             });
 
     public static final Multimap<Item, Class<? extends AnimalEntity>> FEED_MAP;
+    public static final Multimap<Item, Class<? extends AllayEntity>> ALLAY_MAP;
     public static final Multimap<Item, Class<? extends AnimalEntity>> SHEAR_MAP;
     static {
         FEED_MAP = ArrayListMultimap.create();
@@ -195,13 +200,17 @@ public class CropManager {
         // 1.17
         FEED_MAP.put(Items.WHEAT, GoatEntity.class); //山羊
         // disabled due to complexity of interaction
-        // FEED_MAP.put(Items.TROPICAL_FISH_BUCKET, AxolotlEntity.class);
+//        FEED_MAP.put(Items.TROPICAL_FISH_BUCKET, AxolotlEntity.class);
 
         FEED_MAP.put(Items.TORCHFLOWER_SEEDS,SnifferEntity.class);//嗅探兽
 
         //剪羊毛
         SHEAR_MAP = ArrayListMultimap.create();
         SHEAR_MAP.put(Items.SHEARS, SheepEntity.class);
+
+        //繁殖悦灵
+        ALLAY_MAP = ArrayListMultimap.create();
+        ALLAY_MAP.put(Items.AMETHYST_SHARD, AllayEntity.class);
     }
 
 
@@ -215,11 +224,6 @@ public class CropManager {
         Block b = w.getBlockState(pos).getBlock();
         return WOOD_BLOCKS.contains(b);
     }
-    //是黑色羊毛
-//    public static boolean isBlackWool(World w, BlockPos pos) {
-//        Block b = w.getBlockState(pos).getBlock();
-//        return WOOL_BLOCKS.contains(b);
-//    }
 
     public static boolean isFlowerBlock(World w, BlockPos pos) {
         Block b = w.getBlockState(pos).getBlock();
@@ -241,6 +245,8 @@ public class CropManager {
             return (blockDown == REED_BLOCK && blockDown2 != REED_BLOCK) ||
                     (blockDown == BAMBOO && blockDown2 != BAMBOO) ||
                     (blockDown == KELP_PLANT && blockDown2 != KELP_PLANT);
+        } else if (b == PITCHER_CROP) {
+            return stat.get(PitcherCropBlock.AGE) >= 4;
         }
         return false;
     }
@@ -269,7 +275,6 @@ public class CropManager {
     }
 
     public static boolean isJungleLog(BlockState s) {
-//        return s.getBlock() == Blocks.JUNGLE_LOG;
         return (s.getBlock() == Blocks.JUNGLE_LOG) || (s.getBlock() == Blocks.STRIPPED_JUNGLE_LOG);
     }
 

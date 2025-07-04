@@ -36,7 +36,7 @@ public class AutoHarvest implements ClientModInitializer {
         FEED, // Feed animals
         FISHING,// Fishing
         HOEING,// 耕地模式
-        AXEITEMS,//斧头右键
+        AXEITEMS,//去皮，雕刻南瓜
         DONTSTEPWHITE;//别踩白块
 
         private static HarvestMode[] vals = values();

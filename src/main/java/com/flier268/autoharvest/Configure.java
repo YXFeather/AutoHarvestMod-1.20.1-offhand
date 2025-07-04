@@ -9,20 +9,20 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 
 public class Configure {
-    private File configFile;
+    private final File configFile;
 
     public FlowerISseed flowerISseed = new FlowerISseed();
 
     public static class FlowerISseed {
         public boolean value = false;
-        private String name = "flowerISseed";
+        private final String name = "flowerISseed";
     }
 
     public Effect_radius effect_radius = new Effect_radius();
 
     public static class Effect_radius {
         public int value = 3;
-        private String name = "effect_radius";
+        private final String name = "effect_radius";
         public static final int Max = 3;
         public static final int Min = 0;
     }
@@ -30,10 +30,10 @@ public class Configure {
     public TickSkip tickSkip = new TickSkip();
 
     public static class TickSkip {
-        public static float value = 1.5f;
-        private String name = "tick_skip";
-        public static final float Max = 100f;
-        public static final float Min = 0f;
+        public static int value = 2;
+        private final String name = "tick_skip";
+        public static final int Max = 100;
+        public static final int Min = 0;
     }
 
     public KeepFishingRodAlive keepFishingRodAlive = new KeepFishingRodAlive();
@@ -41,6 +41,13 @@ public class Configure {
     public static class KeepFishingRodAlive {
         public boolean value = true;
         String name = "keepFishingRodAlive";
+    }
+
+    public KeepWaterNearBy keepWaterNearBy = new KeepWaterNearBy();
+
+    public static class KeepWaterNearBy {
+        public boolean value = true;
+        String name = "keepWaterNearBy";
     }
 
 
@@ -67,6 +74,18 @@ public class Configure {
                     } catch (Exception e) {
                     }
                 }
+                if (jsonObject.has(keepFishingRodAlive.name)) {
+                    try {
+                        this.keepFishingRodAlive.value = jsonObject.getAsJsonPrimitive(keepFishingRodAlive.name).getAsBoolean();
+                    } catch (Exception e) {
+                    }
+                }
+                if (jsonObject.has(keepWaterNearBy.name)) {
+                    try {
+                        this.keepWaterNearBy.value = jsonObject.getAsJsonPrimitive(keepWaterNearBy.name).getAsBoolean();
+                    } catch (Exception e) {
+                    }
+                }
                 if (jsonObject.has(effect_radius.name)) {
                     try {
                         this.effect_radius.value = jsonObject.getAsJsonPrimitive(effect_radius.name).getAsInt();
@@ -77,15 +96,9 @@ public class Configure {
                 }
                 if (jsonObject.has(tickSkip.name)) {
                     try {
-                        this.tickSkip.value = jsonObject.getAsJsonPrimitive(tickSkip.name).getAsFloat();
+                        this.tickSkip.value = jsonObject.getAsJsonPrimitive(tickSkip.name).getAsInt();
                         if (tickSkip.value < TickSkip.Min || tickSkip.value > TickSkip.Max)
-                            tickSkip.value = 2f;
-                    } catch (Exception e) {
-                    }
-                }
-                if (jsonObject.has(keepFishingRodAlive.name)) {
-                    try {
-                        this.keepFishingRodAlive.value = jsonObject.getAsJsonPrimitive(keepFishingRodAlive.name).getAsBoolean();
+                            tickSkip.value = 2;
                     } catch (Exception e) {
                     }
                 }
