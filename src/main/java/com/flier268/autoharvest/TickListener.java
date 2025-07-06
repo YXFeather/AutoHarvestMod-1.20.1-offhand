@@ -9,18 +9,15 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -102,16 +99,15 @@ public class TickListener {
 
     /* 手执行左键动作 */
     private void leftButton(BlockPos pos, Direction direction) {
-        assert MinecraftClient.getInstance().interactionManager != null;
-        MinecraftClient.getInstance().interactionManager.attackBlock(pos, direction);
+        assert im != null;
+        im.attackBlock(pos, direction);
     }
 
     /* 手执行右键工作 */
     private void rightButton(double X, double Y, double Z, Direction direction, BlockPos pos, Hand hand) {
         BlockHitResult blockHitResult = new BlockHitResult(new Vec3d(X, Y, Z), direction, pos, false);
-        assert MinecraftClient.getInstance().interactionManager != null;
-        MinecraftClient.getInstance().interactionManager.interactBlock(
-                MinecraftClient.getInstance().player, hand, blockHitResult);
+        assert im != null;
+        im.interactBlock(MinecraftClient.getInstance().player, hand, blockHitResult);
     }
 
     /* clear all grass on land */
@@ -354,7 +350,7 @@ public class TickListener {
                     if (w.getBlockState(pos.down()).getBlock() == Blocks.KELP)
                         continue;
                     lastUsedItem = itemStack.copy();
-                    assert MinecraftClient.getInstance().interactionManager != null;
+                    assert im != null;
                     BlockPos downPos = pos.down();
                     rightButton(X + deltaX + 0.5, Y, Z + deltaZ + 0.5, Direction.UP, downPos, hand);
                     return;
@@ -553,16 +549,16 @@ public class TickListener {
                 /* Reel */
                 if (fishBitesAt == 0 && isFishBites(p)) {
                     fishBitesAt = getWorldTime();
-                    assert MinecraftClient.getInstance().interactionManager != null;
-                    MinecraftClient.getInstance().interactionManager.interactItem(
+                    assert im != null;
+                    im.interactItem(
                             p,
                             Hand.MAIN_HAND);
                 }
 
                 /* Cast */
                 if (fishBitesAt != 0 && fishBitesAt + 20 <= getWorldTime()) {
-                    assert MinecraftClient.getInstance().interactionManager != null;
-                    MinecraftClient.getInstance().interactionManager.interactItem(
+                    assert im != null;
+                    im.interactItem(
                             p,
                             Hand.MAIN_HAND);
                     fishBitesAt = 0;
