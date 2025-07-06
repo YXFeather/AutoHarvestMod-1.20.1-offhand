@@ -132,7 +132,7 @@ public class CropManager {
 
     public static final Multimap<Item, Class<? extends AnimalEntity>> FEED_MAP;
     public static final Multimap<Item, Class<? extends AllayEntity>> ALLAY_MAP; // 悦灵
-//    public static final Multimap<Item, Class<? extends AnimalEntity>> AXOLOT_MAP; // 美西螈
+    public static final Multimap<Item, Class<? extends AnimalEntity>> AXOLOT_MAP; // 美西螈
     public static final Multimap<Item, Class<? extends AnimalEntity>> SHEAR_MAP;
     static {
         FEED_MAP = ArrayListMultimap.create();
@@ -195,8 +195,8 @@ public class CropManager {
         FEED_MAP.put(Items.WHEAT, GoatEntity.class);//山羊
 
         // disabled due to complexity of interaction
-//        AXOLOT_MAP = ArrayListMultimap.create();
-//        AXOLOT_MAP.put(Items.TROPICAL_FISH_BUCKET, AxolotlEntity.class);
+        AXOLOT_MAP = ArrayListMultimap.create();
+        AXOLOT_MAP.put(Items.TROPICAL_FISH_BUCKET, AxolotlEntity.class);
 
         FEED_MAP.put(Items.TORCHFLOWER_SEEDS,SnifferEntity.class);//嗅探兽
 

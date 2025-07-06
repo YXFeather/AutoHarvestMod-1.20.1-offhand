@@ -6,8 +6,10 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
@@ -18,6 +20,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -30,6 +33,8 @@ public class TickListener {
 
     private long fishBitesAt = 0L;
     private ItemStack lastUsedItem = null;
+
+    ClientPlayerInteractionManager im = MinecraftClient.getInstance().interactionManager;
 
     public TickListener(Configure configure, ClientPlayerEntity player) {
         this.configure = configure;
@@ -288,7 +293,7 @@ public class TickListener {
     /* 查找背包内物品 */
     private ItemStack tryFillItemInHand() {
         ItemStack itemStack = p.getMainHandStack();
-        if (itemStack.isEmpty()) {
+        if (itemStack.isEmpty() || itemStack.isOf(Items.WATER_BUCKET)) {
             if (lastUsedItem != null && !lastUsedItem.isEmpty()) {
                 DefaultedList<ItemStack> inv = p.getInventory().main;
                 for (int idx = 0; idx < 36; ++idx) {
@@ -306,7 +311,6 @@ public class TickListener {
             return itemStack;
         }
     }
-
 
     /* 副手种植 */
     private void offplantTick() {
@@ -426,9 +430,11 @@ public class TickListener {
         return d3 <= 36D;
     }
 
+
     /* 动物喂养 */
     private void feedTick() {
         ItemStack handItem = tryFillItemInHand();
+        ItemStack mainHandItem = p.getMainHandStack();
 
         if (handItem == null) return;
 
@@ -438,6 +444,7 @@ public class TickListener {
         Box box = new Box(p.getX() - radius, p.getY() - radius,
                             p.getZ() - radius, p.getX() + radius,
                             p.getY() + radius, p.getZ() + radius);
+
         Collection<Class<? extends AnimalEntity>> needShearAnimalList = CropManager.SHEAR_MAP.get(handItem.getItem());
         for (Class<? extends AnimalEntity> type : needShearAnimalList) {
             for (AnimalEntity e : p.getEntityWorld().getEntitiesByClass(
@@ -450,9 +457,24 @@ public class TickListener {
                         return false;
                     })) {
                 lastUsedItem = handItem.copy();
-                assert MinecraftClient.getInstance().interactionManager != null;
-                MinecraftClient.getInstance().interactionManager.interactEntity(p, e, Hand.MAIN_HAND);
+                assert im != null;
+                im.interactEntity(p, e, Hand.MAIN_HAND);
                 return;
+            }
+        }
+        // 繁殖美西螈
+        Collection<Class<? extends AnimalEntity>> AxolotList = CropManager.AXOLOT_MAP.get(handItem.getItem());
+        for (Class<? extends AnimalEntity> type : AxolotList) {
+            for (AnimalEntity e : p.getEntityWorld().getEntitiesByClass(
+                    type,
+                    box,
+                    animalEntity -> animalEntity.getBreedingAge() >= 0 && !animalEntity.isInLove())) {
+                if (mainHandItem.isOf(Items.TROPICAL_FISH_BUCKET)) {
+                    lastUsedItem = handItem.copy();
+                    assert im != null;
+                    im.interactEntity(p, e, Hand.MAIN_HAND);
+                    break;
+                }
             }
         }
         // 繁殖悦灵
@@ -462,38 +484,25 @@ public class TickListener {
                     type,
                     box,
                     allayEntity -> !allayEntity.isHoldingItem() && allayEntity.isDancing())) {
-
                 lastUsedItem = handItem.copy();
-                assert MinecraftClient.getInstance().interactionManager != null;
-                MinecraftClient.getInstance().interactionManager.interactEntity(p, e, Hand.MAIN_HAND);
+                assert im != null;
+                im.interactEntity(p, e, Hand.MAIN_HAND);
             }
         }
-//        // 美西螈
-//        Collection<Class<? extends AnimalEntity>> feedAxolotList = CropManager.AXOLOT_MAP.get(handItem.getItem());
-//        for (Class<? extends AnimalEntity> type : feedAxolotList) {
-//            for (AnimalEntity e : p.getEntityWorld().getEntitiesByClass(
-//                    type,
-//                    box,
-//                    animalEntity -> animalEntity.getBreedingAge() >= 0 && !animalEntity.isInLove())) {
-//
-//
-//            }
-//        }
-        // 繁殖普通动物 (不包括美西螈)
+        // 繁殖普通动物
         Collection<Class<? extends AnimalEntity>> needFeedAnimalList = CropManager.FEED_MAP.get(handItem.getItem());
         for (Class<? extends AnimalEntity> type : needFeedAnimalList) {
             for (AnimalEntity e : p.getEntityWorld().getEntitiesByClass(
                     type,
                     box,
                     animalEntity -> animalEntity.getBreedingAge() >= 0 && !animalEntity.isInLove())) {
-
                 lastUsedItem = handItem.copy();
-                assert MinecraftClient.getInstance().interactionManager != null;
-                MinecraftClient.getInstance().interactionManager.interactEntity(p, e, Hand.MAIN_HAND);
-
+                assert im != null;
+                im.interactEntity(p, e, Hand.MAIN_HAND);
             }
         }
     }
+
 
     /**
      * @return -1: doesn't have rod; 0: no change; 1: change
