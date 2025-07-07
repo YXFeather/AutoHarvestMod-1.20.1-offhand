@@ -464,7 +464,7 @@ public class TickListener {
             for (AnimalEntity e : p.getEntityWorld().getEntitiesByClass(
                     type,
                     box,
-                    animalEntity -> animalEntity.getBreedingAge() >= 0 && !animalEntity.isInLove())) {
+                    animalEntity -> animalEntity.getBreedingAge() >= 0 && animalEntity.canEat())) {
                 if (mainHandItem.isOf(Items.TROPICAL_FISH_BUCKET)) {
                     lastUsedItem = handItem.copy();
                     assert im != null;
@@ -491,7 +491,7 @@ public class TickListener {
             for (AnimalEntity e : p.getEntityWorld().getEntitiesByClass(
                     type,
                     box,
-                    animalEntity -> animalEntity.getBreedingAge() >= 0 && !animalEntity.isInLove())) {
+                    animalEntity -> animalEntity.getBreedingAge() >= 0 && animalEntity.canEat())) {
                 lastUsedItem = handItem.copy();
                 assert im != null;
                 im.interactEntity(p, e, Hand.MAIN_HAND);
