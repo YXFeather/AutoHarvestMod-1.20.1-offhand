@@ -25,6 +25,6 @@
   "config.effect_radius": "作用半徑",
   "config.tick_skip": "作用速度(秒)",
   "config.tick_skip_tooltip": "20刻 / 秒",
-  "config.keep_fishing_rod_alive": "保持魚竿激活",
+  "config.keep_fishing_rod_alive": "是否破壞魚竿",
   "config.keep_water_near_by": "在水源附近犁地"
 }

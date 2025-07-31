@@ -6,7 +6,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.SheepEntity;
@@ -31,7 +30,7 @@ public class TickListener {
     private long fishBitesAt = 0L;
     private ItemStack lastUsedItem = null;
 
-    ClientPlayerInteractionManager im = MinecraftClient.getInstance().interactionManager;
+//    ClientPlayerInteractionManager im = MinecraftClient.getInstance().interactionManager;
 
     public TickListener(Configure configure, ClientPlayerEntity player) {
         this.configure = configure;
@@ -66,12 +65,12 @@ public class TickListener {
                 case SEED -> seedTick();
                 case HARVEST -> harvestTick();
                 case PLANT -> {
-                    offplantTick();
+//                    offplantTick();
                     mainplantTick();
                 }
                 case Farmer -> {
                     harvestTick();
-                    offplantTick();
+//                    offplantTick();
                     mainplantTick();
                 }
                 case FEED -> feedTick();
@@ -99,15 +98,15 @@ public class TickListener {
 
     /* 手执行左键动作 */
     private void leftButton(BlockPos pos, Direction direction) {
-        assert im != null;
-        im.attackBlock(pos, direction);
+        assert MinecraftClient.getInstance().interactionManager != null;
+        MinecraftClient.getInstance().interactionManager.attackBlock(pos, direction);
     }
 
     /* 手执行右键工作 */
     private void rightButton(double X, double Y, double Z, Direction direction, BlockPos pos, Hand hand) {
+        assert MinecraftClient.getInstance().interactionManager != null;
         BlockHitResult blockHitResult = new BlockHitResult(new Vec3d(X, Y, Z), direction, pos, false);
-        assert im != null;
-        im.interactBlock(MinecraftClient.getInstance().player, hand, blockHitResult);
+        MinecraftClient.getInstance().interactionManager.interactBlock(MinecraftClient.getInstance().player, hand, blockHitResult);
     }
 
     /* clear all grass on land */
@@ -285,6 +284,16 @@ public class TickListener {
         }
     }
 
+    private void minusOneInHand() {
+        ItemStack st = p.getMainHandStack();
+        if (st != null) {
+            if (st.getCount() <= 1) {
+                p.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
+            } else {
+                st.setCount(st.getCount() - 1);
+            }
+        }
+    }
 
     /* 查找背包内物品 */
     private ItemStack tryFillItemInHand() {
@@ -309,31 +318,28 @@ public class TickListener {
     }
 
     /* 副手种植 */
-    private void offplantTick() {
-        ItemStack offHandItem = p.getOffHandStack();
-
-        if (offHandItem == null) return;
-
-        plantTick(offHandItem, Hand.OFF_HAND);
-    }
+//    private void offplantTick() {
+//        ItemStack offHandItem = p.getOffHandStack();
+//        if (offHandItem == null) return;
+//        plantTick(offHandItem, Hand.OFF_HAND);
+//    }
 
     /* 主手种植 */
     private void mainplantTick() {
         ItemStack HandItem = p.getMainHandStack();
-
         if (HandItem == null) return;
-
         plantTick(HandItem, Hand.MAIN_HAND);
     }
 
     /* 种植 */
-    private void plantTick(ItemStack itemStack, Hand hand) {
-        if (!CropManager.isSeed(itemStack)) {
-            if (CropManager.isCocoa(itemStack)) {
-                plantCocoaTick();
-            }
+    private void plantTick(ItemStack handItem, Hand hand) {
+        if (CropManager.isCocoa(handItem)) {
+            plantCocoaTick(handItem);
+        }
+        if (lastUsedItem == null && !CropManager.isSeed(handItem)) {
             return;
         }
+        handItem = tryFillItemInHand();
 
         World w = p.getEntityWorld();
         int radius = configure.effect_radius.value;
@@ -344,26 +350,24 @@ public class TickListener {
         for (int deltaX = -radius; deltaX <= radius; ++deltaX)
             for (int deltaZ = -radius; deltaZ <= radius; ++deltaZ) {
                 BlockPos pos = new BlockPos(X + deltaX, Y, Z + deltaZ);
-                if (!CropManager.canPaint(w.getBlockState(pos), itemStack))
+                if (!CropManager.canPaint(w.getBlockState(pos), handItem))
                     continue;
-                if (CropManager.canPlantOn(itemStack.getItem(), w, pos)) {
+                if (CropManager.canPlantOn(handItem.getItem(), w, pos)) {
                     if (w.getBlockState(pos.down()).getBlock() == Blocks.KELP)
                         continue;
-                    lastUsedItem = itemStack.copy();
-                    assert im != null;
+                    lastUsedItem = handItem.copy();
+                    assert MinecraftClient.getInstance().interactionManager != null;
                     BlockPos downPos = pos.down();
                     rightButton(X + deltaX + 0.5, Y, Z + deltaZ + 0.5, Direction.UP, downPos, hand);
+                    minusOneInHand();
                     return;
                 }
             }
     }
 
     /* 可可豆种植 */
-    private void plantCocoaTick() {
-        ItemStack mhand = p.getMainHandStack();
-        if (!CropManager.isCocoa(mhand)) {
-            return;
-        }
+    private void plantCocoaTick(ItemStack handItem) {
+        if (!CropManager.isCocoa(handItem)) return;
 
         World w = p.getEntityWorld();
         int radius = configure.effect_radius.value;
@@ -383,32 +387,36 @@ public class TickListener {
                         Direction tmpFace = Direction.EAST;
                         tmpPos = pos.add(tmpFace.getVector());
                         if (w.getBlockState(tmpPos).getBlock() == Blocks.AIR) {
-                            lastUsedItem = mhand.copy();
+                            lastUsedItem = handItem.copy();
                             rightButton(X + deltaX + 1, Y + deltaY + 0.5, Z + deltaZ + 0.5, tmpFace, pos, Hand.MAIN_HAND);
+                            minusOneInHand();
                             return;
                         }
 
                         tmpFace = Direction.WEST;
                         tmpPos = pos.add(tmpFace.getVector());
                         if (w.getBlockState(tmpPos).getBlock() == Blocks.AIR) {
-                            lastUsedItem = mhand.copy();
+                            lastUsedItem = handItem.copy();
                             rightButton(X + deltaX, Y + deltaY + 0.5, Z + deltaZ + 0.5, tmpFace, pos, Hand.MAIN_HAND);
+                            minusOneInHand();
                             return;
                         }
 
                         tmpFace = Direction.SOUTH;
                         tmpPos = pos.add(tmpFace.getVector());
                         if (w.getBlockState(tmpPos).getBlock() == Blocks.AIR) {
-                            lastUsedItem = mhand.copy();
+                            lastUsedItem = handItem.copy();
                             rightButton(X + deltaX + 0.5, Y + deltaY + 0.5, Z + deltaZ + 1, tmpFace, pos, Hand.MAIN_HAND);
+                            minusOneInHand();
                             return;
                         }
 
                         tmpFace = Direction.NORTH;
                         tmpPos = pos.add(tmpFace.getVector());
                         if (w.getBlockState(tmpPos).getBlock() == Blocks.AIR) {
-                            lastUsedItem = mhand.copy();
+                            lastUsedItem = handItem.copy();
                             rightButton(X + deltaX + 0.5, Y + deltaY + 0.5, Z + deltaZ, tmpFace, pos, Hand.MAIN_HAND);
+                            minusOneInHand();
                             return;
                         }
                     }
@@ -429,8 +437,8 @@ public class TickListener {
 
     /* 动物喂养 */
     private void feedTick() {
-        ItemStack handItem = tryFillItemInHand();
         ItemStack mainHandItem = p.getMainHandStack();
+        ItemStack handItem = tryFillItemInHand();
 
         if (handItem == null) return;
 
@@ -453,8 +461,8 @@ public class TickListener {
                         return false;
                     })) {
                 lastUsedItem = handItem.copy();
-                assert im != null;
-                im.interactEntity(p, e, Hand.MAIN_HAND);
+                assert MinecraftClient.getInstance().interactionManager != null;
+                MinecraftClient.getInstance().interactionManager.interactEntity(p, e, Hand.MAIN_HAND);
                 return;
             }
         }
@@ -467,8 +475,8 @@ public class TickListener {
                     animalEntity -> animalEntity.getBreedingAge() >= 0 && animalEntity.canEat())) {
                 if (mainHandItem.isOf(Items.TROPICAL_FISH_BUCKET)) {
                     lastUsedItem = handItem.copy();
-                    assert im != null;
-                    im.interactEntity(p, e, Hand.MAIN_HAND);
+                    assert MinecraftClient.getInstance().interactionManager != null;
+                    MinecraftClient.getInstance().interactionManager.interactEntity(p, e, Hand.MAIN_HAND);
                     break;
                 }
             }
@@ -481,8 +489,8 @@ public class TickListener {
                     box,
                     allayEntity -> !allayEntity.isHoldingItem() && allayEntity.isDancing())) {
                 lastUsedItem = handItem.copy();
-                assert im != null;
-                im.interactEntity(p, e, Hand.MAIN_HAND);
+                assert MinecraftClient.getInstance().interactionManager != null;
+                MinecraftClient.getInstance().interactionManager.interactEntity(p, e, Hand.MAIN_HAND);
             }
         }
         // 繁殖普通动物
@@ -493,8 +501,8 @@ public class TickListener {
                     box,
                     animalEntity -> animalEntity.getBreedingAge() >= 0 && animalEntity.canEat())) {
                 lastUsedItem = handItem.copy();
-                assert im != null;
-                im.interactEntity(p, e, Hand.MAIN_HAND);
+                assert MinecraftClient.getInstance().interactionManager != null;
+                MinecraftClient.getInstance().interactionManager.interactEntity(p, e, Hand.MAIN_HAND);
             }
         }
     }
@@ -549,16 +557,16 @@ public class TickListener {
                 /* Reel */
                 if (fishBitesAt == 0 && isFishBites(p)) {
                     fishBitesAt = getWorldTime();
-                    assert im != null;
-                    im.interactItem(
+                    assert MinecraftClient.getInstance().interactionManager != null;
+                    MinecraftClient.getInstance().interactionManager.interactItem(
                             p,
                             Hand.MAIN_HAND);
                 }
 
                 /* Cast */
                 if (fishBitesAt != 0 && fishBitesAt + 20 <= getWorldTime()) {
-                    assert im != null;
-                    im.interactItem(
+                    assert MinecraftClient.getInstance().interactionManager != null;
+                    MinecraftClient.getInstance().interactionManager.interactItem(
                             p,
                             Hand.MAIN_HAND);
                     fishBitesAt = 0;
@@ -571,11 +579,8 @@ public class TickListener {
     /* 骨粉催熟 */
     private void bonemealingTick() {
         ItemStack handItem = p.getMainHandStack();
-        if (handItem == null || !CropManager.isBoneMeal(handItem)) {
-            return;
-        } else {
-            handItem = tryFillItemInHand();
-        }
+
+        if (!CropManager.isBoneMeal(handItem)) handItem = tryFillItemInHand();
 
         int radius = configure.effect_radius.value;
 
@@ -591,18 +596,20 @@ public class TickListener {
                     Block block = blockState.getBlock();
                     // 催熟瓶子草
                     if (block instanceof PitcherCropBlock){
-                        if (((PitcherCropBlock) block).isFertilizable(w, pos, blockState, true)) {
+                        if (((PitcherCropBlock) block).isFertilizable(w, pos, blockState, w.isClient)) {
                             assert handItem != null;
                             lastUsedItem = handItem.copy();
                             rightButton(X + deltaX + 0.5, Y + deltaY + 0.5, Z + deltaZ + 0.5, Direction.UP, pos, Hand.MAIN_HAND);
+                            minusOneInHand();
                             return;
                         }
                     }
                     if (block instanceof CropBlock) {
-                        if (((CropBlock) block).isFertilizable(w, pos, blockState, true)) {
+                        if (((CropBlock) block).isFertilizable(w, pos, blockState, w.isClient)) {
                             assert handItem != null;
                             lastUsedItem = handItem.copy();
                             rightButton(X + deltaX + 0.5, Y + deltaY + 0.5, Z + deltaZ + 0.5, Direction.UP, pos, Hand.MAIN_HAND);
+                            minusOneInHand();
                             return;
                         }
                     }
