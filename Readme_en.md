@@ -11,6 +11,8 @@ You just need to walk around, and all the mature crops will be harvested and re-
 1. Minecraft 1.20.1
 2. [Fabric](https://fabricmc.net/wiki/install)
 3. [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api)
+4. [Mod Menu](https://modrinth.com/mod/modmenu)
+5. [Cloth Config API](https://modrinth.com/mod/cloth-config/)
 
 ### Usage
 Use key `H` to switch between different modes. You will see the status in chat. You can change this key in Settings.  
@@ -26,22 +28,6 @@ Available modes are:
 - Peeling: Right click on the log with an axe to obtain peeled logs
 - Farmland: Automatic hoeing
 - Brewing: Automatically brew potions and throw them
-
-Supported Crops:
-
-- Wheat
-- Carrot
-- Potato
-- Nether Wart
-- Pumpkin
-- Melon
-- Sapling
-- Kelp
-- Bamboo
-- Berry
-- Mushroom (Small ones Only)
-- All kind of grass
-- All kind of flowers
 
 ### License
 This mod is publish under GPLv3.

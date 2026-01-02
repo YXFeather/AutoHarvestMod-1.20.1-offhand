@@ -10,6 +10,7 @@
 1. Minecraft 1.20.1
 2. [Fabric](https://fabricmc.net/wiki/install)
 3. [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api)
+4. [Mod Menu](https://modrinth.com/mod/modmenu)
 
 ### 用法
 使用快捷键“H”在不同模式之间切换。您将在聊天中看到状态。您可以在“设置”中更改此快捷键。
@@ -25,23 +26,7 @@
  - 钓鱼：自动钓鱼
  - 去皮：斧头右键原木获取去皮原木
  - 耕地：锄头自动耕地
- - 酿造：用来刷某些服务器的RPG技能等级（自动酿造喷溅型药水并扔出）
-
-支持的作物：
-
- - 小麦
- - 胡萝卜
- - 马铃薯
- - 地狱疣
- - 南瓜
- - 西瓜
- - 树苗
- - 海带
- - 竹子
- - 浆果
- - 蘑菇（仅限小型）
- - 各种草
- - 各种花卉
+ - 酿造：用来刷某些服务器的RPG技能等级（自动酿造喷溅型速度药水并扔出）
 
 ### 授权
 此mod在GPLv3下发布。

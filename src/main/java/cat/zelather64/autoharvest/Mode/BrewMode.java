@@ -13,6 +13,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.*;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
@@ -324,6 +325,10 @@ public class BrewMode implements AutoMode{
                 if (count == 3) {return true;}
             }
         }
+        if (glassBottle_slot == -1) {
+            disable(3);
+            return false;
+        }
         return false;
     }
 
@@ -334,9 +339,17 @@ public class BrewMode implements AutoMode{
         Vec3d playerPos = BoxUtil.getPlayerPos();
         if (playerPos == null) return;
 
+        int slotIndex = -1;
         int glassBottleIndex = glassBottle_slot;
-        ItemStack glassBottle = player.getInventory().getStack(glassBottleIndex);
-        if (glassBottle.getCount() <= 2 || glassBottleIndex == -1) {
+        Inventory playerInventory = BoxUtil.getInventory();
+        ItemStack glassBottle = playerInventory.getStack(glassBottleIndex);
+        if (glassBottle.getCount() <= 2) {
+            slotIndex = findItemSlot(player, playerInventory.size(), Items.GLASS_BOTTLE);
+            if (slotIndex != -1 ) {
+                glassBottleIndex = slotIndex;
+            }
+        }
+        if (glassBottleIndex == -1 || slotIndex == -1){
             disable(3);
             return;
         }
@@ -585,19 +598,13 @@ public class BrewMode implements AutoMode{
     }
 
     private int findItemSlot(ClientPlayerEntity player, int slotSize, Item item) {
-        int currentSlot = player.getInventory().selectedSlot;
         int bestSlot = -1;
-        int minDistance = Integer.MAX_VALUE;
-
         PlayerInventory inventory = player.getInventory();
 
         for (int slot = 0; slot < slotSize; slot++) {
             if (inventory.getStack(slot).getItem() == item) {
-                int distance = Math.abs(slot - currentSlot);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    bestSlot = slot;
-                }
+                bestSlot = slot;
+                return bestSlot;
             }
         }
         return bestSlot;

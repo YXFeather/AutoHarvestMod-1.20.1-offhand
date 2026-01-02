@@ -1,13 +1,10 @@
 {
   "required": true,
-  "package": "com.zenther64.autoharvest.mixin",
+  "package": "cat.zelather64.autoharvest.Config",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "overwrites": {
-    "requireAnnotations": true
   }
 }

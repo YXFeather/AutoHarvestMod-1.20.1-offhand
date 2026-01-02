@@ -1,4 +1,4 @@
-package cat.zelather64.autoharvest.Config;
+package cat.zelather64.autoharvest.Utils;
 
 import cat.zelather64.autoharvest.ModeManger.ModeEnum;
 import cat.zelather64.autoharvest.ModeManger.ModeManager;

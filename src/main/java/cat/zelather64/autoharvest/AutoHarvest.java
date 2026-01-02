@@ -1,7 +1,7 @@
 package cat.zelather64.autoharvest;
 
 import cat.zelather64.autoharvest.Config.AutoHarvestConfig;
-import cat.zelather64.autoharvest.Config.KeyPressListener;
+import cat.zelather64.autoharvest.Utils.KeyPressListener;
 import cat.zelather64.autoharvest.ModeManger.ModeManager;
 import cat.zelather64.autoharvest.Utils.SmoothLookHelper;
 import me.shedaniel.autoconfig.AutoConfig;

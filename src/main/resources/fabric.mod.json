@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "id": "autoharvest",
   "version": "${version}",
-  "name": "Auto Harvest",
+  "name": "AutoHarvest",
   "description": "Automatically harvest and re-plant crops",
   "authors": [
-    "flier268"
+    "Zelather64"
   ],
   "contact": {
     "sources": "https://github.com/YXFeather/AutoHarvestMod-1.20.1-offhand"
@@ -21,13 +21,11 @@
       "cat.zelather64.autoharvest.Config.AutoHarvestModMenu"
     ]
   },
-
   "depends": {
-    "fabricloader": ">0.4.0",
+    "fabricloader": ">=0.14.22",
+    "minecraft": ">=1.20",
+    "java": ">=17",
     "fabric-api": "*"
-  },
-  "suggests": {
-    "another-mod": "*"
   },
   "custom": {
     "modmenu:clientsideOnly": true
